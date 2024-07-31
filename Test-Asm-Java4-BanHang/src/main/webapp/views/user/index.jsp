@@ -161,6 +161,19 @@ body {
 	transform: scale(1.1);
 }
 
+/* thay đổi kích thước ảnh sản phẩm */
+.product-item .card-img-top {
+	width: 100%;
+	height: 500px; /* Chiều cao cố định */
+	object-fit: cover; /* Đảm bảo hình ảnh được căn chỉnh */
+}
+/* thay đổi kích thước ảnh nhân viên */
+.img-team {
+	width: 100%;
+	height: 300px; /* Adjust height as needed */
+	object-fit: cover;
+}
+
 .package-item {
 	box-shadow: 0 0 45px rgba(0, 0, 0, .08);
 }
@@ -199,7 +212,7 @@ body {
 <body>
 	<%@ include file="/Common/Header.jsp"%>
 	<!-- Carousel -->
-	<div id="heroCarousel" class="carousel slide" data-ride="carousel">
+	<div id="heroCarousel" class="carousel slide" data-ride="carousel" style="margin-top: 100px">
 		<ol class="carousel-indicators">
 			<li data-target="#heroCarousel" data-slide-to="0" class="active"></li>
 			<li data-target="#heroCarousel" data-slide-to="1"></li>
@@ -616,7 +629,7 @@ body {
 							<div
 								class="d-inline-flex align-items-center justify-content-center bg-primary rounded-circle position-absolute top-0 start-50 translate-middle shadow"
 								style="width: 100px; height: 100px; background-color: aquamarine !important;">
-								<i class="fa fa- fa-3x text-black"></i>
+								<i class="fa fa-search fa-3x text-black"></i>
 							</div>
 							<h5 class="mt-4">Tìm kiếm sản phẩm</h5>
 							<hr class="w-25 mx-auto mb-1"
@@ -812,7 +825,7 @@ body {
 					<div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
 						<div class="team-item">
 							<div class="overflow-hidden">
-								<img class="img-fluid"
+								<img class="img-fluid img-team"
 									src="<c:url value='/Template/User/logo/CLy.jpg'/>" alt="">
 							</div>
 							<div class="position-relative d-flex justify-content-center"
@@ -825,7 +838,7 @@ body {
 									class="fab fa-instagram" style="color: #e52822;"></i></a>
 							</div>
 							<div class="text-center p-4">
-								<h6 class="mb-0">LyLy Cute</h6>
+								<h6 class="mb-0">LiLi Cute</h6>
 								<small>Nhân viên nhiệt huyết và năng lượng</small>
 							</div>
 						</div>
@@ -833,7 +846,7 @@ body {
 					<div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
 						<div class="team-item">
 							<div class="overflow-hidden">
-								<img class="img-fluid"
+								<img class="img-fluid img-team"
 									src="<c:url value='/Template/User/logo/AChuong.jpg'/>" alt="">
 							</div>
 							<div class="position-relative d-flex justify-content-center"
@@ -854,7 +867,7 @@ body {
 					<div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
 						<div class="team-item">
 							<div class="overflow-hidden">
-								<img class="img-fluid"
+								<img class="img-fluid img-team"
 									src="<c:url value='/Template/User/logo/Td.jpg'/>" alt="">
 							</div>
 							<div class="position-relative d-flex justify-content-center"
@@ -875,7 +888,7 @@ body {
 					<div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
 						<div class="team-item">
 							<div class="overflow-hidden">
-								<img class="img-fluid"
+								<img class="img-fluid img-team"
 									src="<c:url value='/Template/User/logo/khang.png'/>" alt="">
 							</div>
 							<div class="position-relative d-flex justify-content-center"
