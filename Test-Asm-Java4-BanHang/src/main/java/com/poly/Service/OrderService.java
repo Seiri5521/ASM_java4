@@ -9,8 +9,8 @@ public interface OrderService {
     Order findByID(BigInteger id);
     List<Order> findAll();
     List<Order> findAll(int pageNumber, int pageSize);
-    Order create(Order entity);
+    Order create(String string,int id);
     Order update(Order entity);
     Order delete(BigInteger id);
-    boolean createOrder(String username, BigInteger id);
+
 }
