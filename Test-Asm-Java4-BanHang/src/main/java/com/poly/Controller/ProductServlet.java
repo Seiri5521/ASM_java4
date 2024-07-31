@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import com.poly.Constant.SessionAtt;
 import com.poly.Entity.Accounts;
+import com.poly.Entity.Order;
 import com.poly.Entity.Product;
 import com.poly.Service.OrderService;
 import com.poly.Service.OrderServiceImpl;
@@ -30,17 +31,21 @@ public class ProductServlet extends HttpServlet {
         String action = req.getParameter("action");
         String id = req.getParameter("id");
         HttpSession session = req.getSession();
-        
+
         if (action != null) {
-            switch (action) {
-                case "view":
-                    doGetView(session, id, req, resp);
-                    break;
-                case "order":
-                    doGetOrder(session, id, req, resp);
-                    break;
-                default:
-                    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+            if (id != null) {
+                switch (action) {
+                    case "view":
+                        doGetView(session, id, req, resp);
+                        break;
+                    case "order":
+                        doGetOrder(session, id, req, resp);
+                        break;
+                    default:
+                        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+                }
+            } else {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID parameter is missing");
             }
         } else {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Action parameter is missing");
@@ -50,18 +55,19 @@ public class ProductServlet extends HttpServlet {
     private void doGetView(HttpSession session, String id, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            int productId = Integer.parseInt(id); // Convert to int for Product
+            int productId = Integer.parseInt(id);
             Product product = productService.findByID(productId);
-            req.setAttribute("product", product);
-            Accounts currentAccounts = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
-
-            // If logged in, you may want to handle user-related logic here
-            if (currentAccounts != null) {
-                // User-related operations
+            if (product != null) {
+                req.setAttribute("product", product);
+                Accounts currentAccounts = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
+                if (currentAccounts != null) {
+                    // User-related operations
+                }
+                RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/product-detail.jsp");
+                requestDispatcher.forward(req, resp);
+            } else {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
             }
-
-            RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/product-detail.jsp");
-            requestDispatcher.forward(req, resp);
         } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid product ID format");
         }
@@ -70,19 +76,19 @@ public class ProductServlet extends HttpServlet {
     private void doGetOrder(HttpSession session, String id, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            BigInteger orderId = new BigInteger(id); // Convert to BigInteger for Order
+            int orderId = Integer.parseInt(id);
             Accounts currentAccounts = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
 
             if (currentAccounts == null) {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // User not logged in
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            boolean result = orderService.createOrder(currentAccounts.getUsername(), orderId);
+            boolean result = orderService.create(currentAccounts.getUsername(), orderId) != null;
             if (result) {
-                resp.setStatus(HttpServletResponse.SC_NO_CONTENT); // Success but no data returned
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Error
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Order creation failed");
             }
         } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid order ID format");
@@ -92,12 +98,19 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-        if ("add".equals(action)) {
-            handleAddProduct(req, resp);
-        } else if ("edit".equals(action)) {
-            handleEditProduct(req, resp);
+        if (action != null) {
+            switch (action) {
+                case "add":
+                    handleAddProduct(req, resp);
+                    break;
+                case "edit":
+                    handleEditProduct(req, resp);
+                    break;
+                default:
+                    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+            }
         } else {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Action parameter is missing");
         }
     }
 
@@ -112,9 +125,8 @@ public class ProductServlet extends HttpServlet {
             product.setAvailable(Boolean.parseBoolean(req.getParameter("available")));
 
             productService.create(product);
-
             resp.sendRedirect(req.getContextPath() + "/product?action=view&id=" + product.getId());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid input format");
         }
     }
@@ -132,12 +144,11 @@ public class ProductServlet extends HttpServlet {
                 product.setAvailable(Boolean.parseBoolean(req.getParameter("available")));
 
                 productService.update(product);
-
                 resp.sendRedirect(req.getContextPath() + "/product?action=view&id=" + productId);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid input format");
         }
     }

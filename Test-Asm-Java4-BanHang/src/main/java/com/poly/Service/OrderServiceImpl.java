@@ -52,14 +52,9 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    @Override
-    public boolean createOrder(String username, BigInteger id) {
-        // Implement logic to create an order
-        return false;
-    }
 
 	@Override
-	public Order create(Order entity) {
+	public Order create(String string, int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

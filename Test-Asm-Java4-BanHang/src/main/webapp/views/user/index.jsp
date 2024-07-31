@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+++<%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="/Common/taglib.jsp"%>
 <!DOCTYPE html>
@@ -11,7 +11,7 @@
 <%@ include file="/Common/Head.jsp"%>
 <style>
 body {
-	background-color: white; /* Màu nền nhẹ nhàng */
+	background-color: white; /* Màu nền nhẹ nhàng */++
 	color: #343a40; /* Màu chữ */
 }
 
@@ -458,45 +458,22 @@ body {
 					lượng cao.</h1>
 			</div>
 		</div>
-		<div class="row tm-mb-90 tm-gallery">
-			<c:forEach items="${Products}" var="video">
-				<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
-					<h5 style="white-space: no-wrap; color: white; overflow: hidden;">${video.title}</h5>
-					<figure class="effect-ming tm-video-item">
-						<img src="<c:url value='${video.poster}'/>" alt="Image"
-							class="img-fluid">
-						<figcaption
-							class="d-flex align-items-center justify-content-center">
-							<h2>
-								<i class="fa-solid fa-circle-play"></i>
-							</h2>
-							<!--/* tao ra http value sau /asm-java */ -->
-							<a href="<c:url value='/video?action=watch&id=${video.href}'/>"></a>
-						</figcaption>
-					</figure>
-					<div class="d-flex justify-content-between tm-text-gray">
-						<span class="tm-text-gray-light">${video.views} - Lượt xem</span>
-						<span>${video.shares} - Chia sẻ</span>
-					</div>
-				</div>
-			</c:forEach>
-		</div>
-		<div class="row tm-gallery">
-			<c:forEach items="${products}" var="product">
-				<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
-					<div class="card">
-						<img src="<c:url value='/Template/User/img/${product.image}'/>"
-							alt="Image" class="img-fluid">
-						<div class="card-body">
-							<h5 class="card-title">${product.name}</h5>
-							<p class="card-text">Giá: ${product.price} VNĐ</p>
-							<a href="<c:url value='/product?id=${product.id}'/>"
-								class="btn btn-primary">Xem chi tiết</a>
-						</div>
-					</div>
-				</div>
-			</c:forEach>
-		</div>
+
+<div class="row tm-gallery">
+    <c:forEach items="${products}" var="product">
+        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
+            <div class="card">
+                <img src="<c:url value='/Template/User/img/${product.image}'/>" alt="${product.name}" class="img-fluid">
+                <div class="card-body">
+                    <h5 class="card-title">${product.name}</h5>
+                    <p class="card-text">Giá: ${product.price} VNĐ</p>
+                    <a href="<c:url value='/product?action=view&id=${product.id}'/>" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    </c:forEach>
+</div>
+
 
 		<div class="row mt-4">
 			<div class="col-12 d-flex justify-content-center">
@@ -707,7 +684,7 @@ body {
 								<p class="card-text fw-bold">20.000.000 VNĐ</p>
 								<div class="d-flex justify-content-center mb-2">
 									<a class="btn btn-sm btn-primary px-3 border-end"
-										style="border-radius: 30px 0 0 30px;" href="#!detail/{{p.id}}">Xem
+										style="border-radius: 30px 0 0 30px;" href="#!product-detail/{{p.id}}">Xem
 										thêm</a> <a href="#!dattour" class="btn btn-sm btn-primary px-3"
 										style="border-radius: 0 30px 30px 0;">Đặt ngay</a>
 								</div>
@@ -726,7 +703,7 @@ body {
 								<p class="card-text fw-bold">10.000.000 VNĐ</p>
 								<div class="d-flex justify-content-center mb-2">
 									<a class="btn btn-sm btn-primary px-3 border-end"
-										style="border-radius: 30px 0 0 30px;" href="#!detail/{{p.id}}">Xem
+										style="border-radius: 30px 0 0 30px;" href="#!product-detail/{{p.id}}">Xem
 										thêm</a> <a href="#!dattour" class="btn btn-sm btn-primary px-3"
 										style="border-radius: 0 30px 30px 0;">Đặt ngay</a>
 								</div>
