@@ -1,4 +1,4 @@
-++<%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="/Common/taglib.jsp"%>
 <!DOCTYPE html>
@@ -167,12 +167,6 @@ body {
 	height: 500px; /* Chiều cao cố định */
 	object-fit: cover; /* Đảm bảo hình ảnh được căn chỉnh */
 }
-/* thay đổi kích thước ảnh nhân viên */
-.img-team {
-	width: 100%;
-	height: 300px; /* Adjust height as needed */
-	object-fit: cover;
-}
 
 .package-item {
 	box-shadow: 0 0 45px rgba(0, 0, 0, .08);
@@ -212,7 +206,7 @@ body {
 <body>
 	<%@ include file="/Common/Header.jsp"%>
 	<!-- Carousel -->
-	<div id="heroCarousel" class="carousel slide" data-ride="carousel" style="margin-top: 100px">
+	<div id="heroCarousel" class="carousel slide" data-ride="carousel" >
 		<ol class="carousel-indicators">
 			<li data-target="#heroCarousel" data-slide-to="0" class="active"></li>
 			<li data-target="#heroCarousel" data-slide-to="1"></li>
@@ -272,7 +266,7 @@ body {
 				<div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s" id="about">
 					<h2 class="tm-text-primary">Giới thiệu cửa hàng</h2>
 					<h1 class="mb-4">
-						Welcom to <span class="tm-text-primary">HIUN Store</span>
+						Welcom to <span class="tm-text-primary">HIUN Shop</span>
 					</h1>
 					<p class="mb-4">Khám phá sản phẩm chất lượng tại cửa hàng trực
 						tuyến của chúng tôi và trải nghiệm mua sắm đẳng cấp cùng những ưu
