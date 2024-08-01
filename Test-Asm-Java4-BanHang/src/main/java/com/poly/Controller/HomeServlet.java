@@ -12,16 +12,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import com.poly.Constant.SessionAtt;
 import com.poly.Entity.Accounts;
 import com.poly.Entity.Order;
+import com.poly.Entity.OrderDetails;
 import com.poly.Entity.Product;
 import com.poly.Service.OrderService;
 import com.poly.Service.OrderServiceImpl;
 import com.poly.Service.ProductService;
 import com.poly.Service.ProductServiceImpl;
+import com.poly.Util.HibernateUtil;
 
-@WebServlet(urlPatterns = { "/index", "/favorites", "/history" })
+@WebServlet(urlPatterns = { "/index", "/favorites", "/history","/cart" })
 public class HomeServlet extends HttpServlet {
     public static final int PRODUCT_MAX_PAGE_SIZE = 4;
     private static final long serialVersionUID = 1L;
@@ -41,6 +46,9 @@ public class HomeServlet extends HttpServlet {
             case "/history":
                 doGetHistory(session, req, res);
                 break;
+            case "/cart":
+            	doGetCart(req, res);
+            	break;
         }
     }
 
@@ -66,7 +74,7 @@ public class HomeServlet extends HttpServlet {
 
     private void doGetFavorites(HttpSession session, HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        Accounts user = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
+    	Accounts user = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
         List<Order> orders = orderService.findAll();
         List<Product> products = new ArrayList<>();
         
@@ -97,4 +105,45 @@ public class HomeServlet extends HttpServlet {
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/history.jsp");
         requestDispatcher.forward(req, res);
     }
+    
+    private void doGetCart(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		/*
+		 * HttpSession session = req.getSession(); List<OrderDetails> cart =
+		 * (List<OrderDetails>) session.getAttribute("cart"); if (cart == null) { cart =
+		 * new ArrayList<>(); session.setAttribute("cart", cart); }
+		 * 
+		 * String productId = req.getParameter("id"); Product product =
+		 * getProductById(Integer.parseInt(productId)); // Method to get product details
+		 * by id if (product != null) { OrderDetails orderDetails = new OrderDetails();
+		 * orderDetails.setProduct(product);
+		 * orderDetails.setPrice(product.getPrice().floatValue()); // Assuming price is
+		 * stored as Float orderDetails.setQuantity(1); // Default quantity
+		 * 
+		 * cart.add(orderDetails); }
+		 * 
+		 * res.sendRedirect("cart.jsp");
+		 */
+        
+    	RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/cart.jsp");
+        requestDispatcher.forward(req, res);
+    }
+
+    private Product getProductById(Integer productId) {
+        SessionFactory factory = HibernateUtil.getSessionFactory();
+        Session session = null;
+        Product product = null;
+        try {
+            session = factory.openSession();
+            product = session.get(Product.class, productId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return product;
+    }
+    
 }
+    
