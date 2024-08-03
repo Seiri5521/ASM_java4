@@ -453,20 +453,22 @@ body {
 			</div>
 		</div>
 
-<div class="row tm-gallery">
-    <c:forEach items="${products}" var="product">
-        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
-            <div class="card">
-                <img src="<c:url value='/Template/User/img/${product.image}'/>" alt="${product.name}" class="img-fluid">
-                <div class="card-body">
-                    <h5 class="card-title">${product.name}</h5>
-                    <p class="card-text">Giá: ${product.price} VNĐ</p>
-                    <a href="<c:url value='/product?action=view&id=${product.id}'/>" class="btn btn-primary">Xem chi tiết</a>
-                </div>
-            </div>
-        </div>
-    </c:forEach>
-</div>
+		<div class="row tm-gallery">
+			<c:forEach items="${products}" var="product">
+				<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-4">
+					<div class="card">
+						<img src="<c:url value='/Template/User/img/${product.image}'/>"
+							alt="${product.name}" class="img-fluid">
+						<div class="card-body">
+							<h5 class="card-title">${product.name}</h5>
+							<p class="card-text">Giá: ${product.price} VNĐ</p>
+							<a href="<c:url value='/product?action=view&id=${product.id}'/>"
+								class="btn btn-primary">Xem chi tiết</a>
+						</div>
+					</div>
+				</div>
+			</c:forEach>
+		</div>
 
 
 		<div class="row mt-4">

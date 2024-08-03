@@ -16,6 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import com.poly.Constant.SessionAtt;
+import com.poly.Dao.ProductDAO;
 import com.poly.Entity.Accounts;
 import com.poly.Entity.Order;
 import com.poly.Entity.OrderDetails;
@@ -26,7 +27,7 @@ import com.poly.Service.ProductService;
 import com.poly.Service.ProductServiceImpl;
 import com.poly.Util.HibernateUtil;
 
-@WebServlet(urlPatterns = { "/index", "/favorites", "/history","/cart" })
+@WebServlet(urlPatterns = { "/index", "/favorites", "/history","/cart","/products" })
 public class HomeServlet extends HttpServlet {
     public static final int PRODUCT_MAX_PAGE_SIZE = 4;
     private static final long serialVersionUID = 1L;
@@ -48,6 +49,9 @@ public class HomeServlet extends HttpServlet {
                 break;
             case "/cart":
             	doGetCart(req, res);
+            	break;
+            case "/products":
+            	doGetProducts(req, res);
             	break;
         }
     }
@@ -103,6 +107,15 @@ public class HomeServlet extends HttpServlet {
 
         req.setAttribute("products", products);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/history.jsp");
+        requestDispatcher.forward(req, res);
+    }
+    
+    private void doGetProducts(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+    	List<Product> products = productService.findAll();    
+    	req.setAttribute("products", products);
+    	
+    	RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/products.jsp");
         requestDispatcher.forward(req, res);
     }
     

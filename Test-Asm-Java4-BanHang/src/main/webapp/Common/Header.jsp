@@ -207,7 +207,7 @@
 			        </a>
 			        <div class="dropdown-menu" aria-labelledby="womenDropdown">
 			            <h6 class="dropdown-header">Sản phẩm</h6>
-			            <a class="dropdown-item" href="#">Áo thun</a>
+			            <a class="dropdown-item" href="products">Áo thun</a>
 			            <a class="dropdown-item" href="#">Áo len</a>
 			            <a class="dropdown-item" href="#">Váy</a>
 			            <a class="dropdown-item" href="#">Đầm</a>
