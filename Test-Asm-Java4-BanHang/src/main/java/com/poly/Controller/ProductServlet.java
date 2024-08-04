@@ -118,7 +118,7 @@ public class ProductServlet extends HttpServlet {
         try {
             Product product = new Product();
             product.setName(req.getParameter("name"));
-            product.setPrice(Double.parseDouble(req.getParameter("price")));
+            product.setPrice(Float.parseFloat(req.getParameter("price")));
             product.setCategoryId(req.getParameter("categoryId"));
             product.setImage(req.getParameter("image"));
             product.setCreateDate(java.sql.Date.valueOf(req.getParameter("createDate")));
@@ -137,7 +137,7 @@ public class ProductServlet extends HttpServlet {
             Product product = productService.findByID(productId);
             if (product != null) {
                 product.setName(req.getParameter("name"));
-                product.setPrice(Double.parseDouble(req.getParameter("price")));
+                product.setPrice(Float.parseFloat(req.getParameter("price")));
                 product.setCategoryId(req.getParameter("categoryId"));
                 product.setImage(req.getParameter("image"));
                 product.setCreateDate(java.sql.Date.valueOf(req.getParameter("createDate")));

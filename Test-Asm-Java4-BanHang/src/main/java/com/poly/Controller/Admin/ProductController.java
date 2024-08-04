@@ -130,7 +130,7 @@ public class ProductController extends HttpServlet {
         try {
             String name = req.getParameter("name");
             String image = req.getParameter("image");
-            Double price = Double.parseDouble(req.getParameter("price"));
+            Float price = Float.parseFloat(req.getParameter("price"));
             String categoryId = req.getParameter("categoryId");
 
             Product product = new Product();
@@ -157,7 +157,7 @@ public class ProductController extends HttpServlet {
             Integer id = Integer.parseInt(req.getParameter("id"));
             String name = req.getParameter("name");
             String image = req.getParameter("image");
-            Double price = Double.parseDouble(req.getParameter("price"));
+            Float price = Float.parseFloat(req.getParameter("price"));
             String categoryId = req.getParameter("categoryId");
 
             Product product = productService.findByID(id);

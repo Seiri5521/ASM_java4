@@ -248,12 +248,18 @@ body {
 					</div>
 
 					<!-- Form để thêm sản phẩm vào giỏ hàng -->
-					<form action="cart.jsp" method="post" style="margin-top: 10px;">
+					<%-- 					<form action="cart.jsp" method="post" style="margin-top: 10px;">
 						<input type="hidden" name="productId" value="${product.id}">
 						<input type="hidden" name="quantity" value="1">
 						<!-- Có thể thay đổi nếu cần -->
 						<a href="cart" class="btn btn-danger">Thêm sản phẩm</a>
+					</form> --%>
+					<form action="addCart" method="post" style="margin-top: 10px;">
+						<input type="hidden" name="productId" value="${product.id}">
+						<input type="number" name="quantity" value="1" placeholder="1" min="1">
+						<button type="submit" class="btn btn-danger">Thêm sản phẩm</button>
 					</form>
+
 				</div>
 
 

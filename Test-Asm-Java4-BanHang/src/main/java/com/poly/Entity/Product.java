@@ -19,7 +19,7 @@ public class Product {
     private String image;
 
     @Column(name = "Price", nullable = false)
-    private Double price;
+    private Float price;
 
     @Column(name = "CreateDate", nullable = false)
     private Date createDate;
@@ -55,11 +55,11 @@ public class Product {
         this.image = image;
     }
 
-    public Double getPrice() {
+    public Float getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
 

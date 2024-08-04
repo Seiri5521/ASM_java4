@@ -66,14 +66,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="product" items="${sessionScope.cart}">
-                            <tr>
-                                <td>${product.name}</td>
-                                <td>${product.price} VNĐ</td>
-                                <td>1</td>
-                                <td>${product.price} VNĐ</td>
-                            </tr>
-                        </c:forEach>
+                        <c:forEach var="cartDetail" items="${sessionScope.cart.detail}">
+									<tr id="tr-${cartDetail.value.masp}">
+										<td><button onclick="removeSP('${cartDetail.value.masp}')" class="btn btn-danger" type="button">X</button></td>
+										<td></td>
+										<td>${cartDetail.value.tensp}</td>
+										<td><input id="slMua-${cartDetail.value.masp}" onchange="updateCart('${cartDetail.value.masp}')" type="number" class="input-mini" value="${cartDetail.value.slMua}"></td>
+										<td><fmt:formatNumber type="number" maxFractionDigits="3" value="${cartDetail.value.giasp}" /></td>
+										<td>
+											<span id="totalSP-${cartDetail.value.masp}">
+												<fmt:formatNumber type="number" maxFractionDigits="3" value="${cartDetail.value.giasp * cartDetail.value.slMua}" />
+											</span>
+										</td>
+									</tr>
+									<input type="hidden" id="giaSP-${cartDetail.value.masp}" value="${cartDetail.value.giasp}" />
+								</c:forEach>
                         <!-- Add a row for the total amount -->
                         <tr>
                             <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>

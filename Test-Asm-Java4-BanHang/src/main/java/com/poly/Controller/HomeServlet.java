@@ -1,6 +1,7 @@
 package com.poly.Controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,151 +13,164 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.poly.Constant.SessionAtt;
-import com.poly.Dao.ProductDAO;
+import com.poly.DTO.CartDto;
 import com.poly.Entity.Accounts;
 import com.poly.Entity.Order;
-import com.poly.Entity.OrderDetails;
 import com.poly.Entity.Product;
+import com.poly.Service.CartService;
 import com.poly.Service.OrderService;
 import com.poly.Service.OrderServiceImpl;
 import com.poly.Service.ProductService;
 import com.poly.Service.ProductServiceImpl;
-import com.poly.Util.HibernateUtil;
 
-@WebServlet(urlPatterns = { "/index", "/favorites", "/history","/cart","/products" })
+@WebServlet(urlPatterns = { "/index", "/favorites", "/history", "/cart", "/products", "/addCart" })
 public class HomeServlet extends HttpServlet {
-    public static final int PRODUCT_MAX_PAGE_SIZE = 4;
-    private static final long serialVersionUID = 1L;
-    private ProductService productService = new ProductServiceImpl();
-    private OrderService orderService = new OrderServiceImpl();
+	public static final int PRODUCT_MAX_PAGE_SIZE = 4;
+	private static final long serialVersionUID = 1L;
+	private ProductService productService = new ProductServiceImpl();
+	private OrderService orderService = new OrderServiceImpl();
+	CartService cartService = new CartService();
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        String path = req.getServletPath();
-        switch (path) {
-            case "/index":
-                doGetIndex(req, res);
-                break;
-            case "/favorites":
-                doGetFavorites(session, req, res);
-                break;
-            case "/history":
-                doGetHistory(session, req, res);
-                break;
-            case "/cart":
-            	doGetCart(req, res);
-            	break;
-            case "/products":
-            	doGetProducts(req, res);
-            	break;
-        }
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		String path = req.getServletPath();
+		switch (path) {
+		case "/index":
+			doGetIndex(req, res);
+			break;
+		case "/favorites":
+			doGetFavorites(session, req, res);
+			break;
+		case "/history":
+			doGetHistory(session, req, res);
+			break;
+		case "/cart":
+			doViewCart(req, res);
+			break;
+		case "/products":
+			doGetProducts(req, res);
+			break;
+		case "/addCart":
+			doAddToCart(req, res, session);
+			break;
+		}
+	}
+	
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	    String path = req.getServletPath();
+	    HttpSession session = req.getSession();
+	    if ("/addCart".equals(path)) {
+	        doAddToCart(req, res, session);
+	        session.removeAttribute("cart");
+	    }
+	}
 
-    private void doGetIndex(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        List<Product> countProduct = productService.findAll();
-        int maxPage = (int) Math.ceil(countProduct.size() / (double) PRODUCT_MAX_PAGE_SIZE);
-        req.setAttribute("maxPage", maxPage);
 
-        List<Product> products;
-        String pageNumber = req.getParameter("page");
-        if (pageNumber == null || Integer.valueOf(pageNumber) > maxPage) {
-            products = productService.findAll(1, PRODUCT_MAX_PAGE_SIZE);
-            req.setAttribute("currentPage", 1);
-        } else {
-            products = productService.findAll(Integer.valueOf(pageNumber), PRODUCT_MAX_PAGE_SIZE);
-            req.setAttribute("currentPage", Integer.valueOf(pageNumber));
-        }
+	private void doGetIndex(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		List<Product> countProduct = productService.findAll();
+		int maxPage = (int) Math.ceil(countProduct.size() / (double) PRODUCT_MAX_PAGE_SIZE);
+		req.setAttribute("maxPage", maxPage);
 
-        req.setAttribute("products", products);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/index.jsp");
-        requestDispatcher.forward(req, res);
-    }
+		List<Product> products;
+		String pageNumber = req.getParameter("page");
+		if (pageNumber == null || Integer.valueOf(pageNumber) > maxPage) {
+			products = productService.findAll(1, PRODUCT_MAX_PAGE_SIZE);
+			req.setAttribute("currentPage", 1);
+		} else {
+			products = productService.findAll(Integer.valueOf(pageNumber), PRODUCT_MAX_PAGE_SIZE);
+			req.setAttribute("currentPage", Integer.valueOf(pageNumber));
+		}
 
-    private void doGetFavorites(HttpSession session, HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-    	Accounts user = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
-        List<Order> orders = orderService.findAll();
-        List<Product> products = new ArrayList<>();
-        
-        orders.forEach(order -> {
-            if (order.getProducts() != null) {
-                products.addAll(order.getProducts());
-            }
-        });
+		req.setAttribute("products", products);
+		RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/index.jsp");
+		requestDispatcher.forward(req, res);
+	}
 
-        req.setAttribute("products", products);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/favorites.jsp");
-        requestDispatcher.forward(req, res);
-    }
+	private void doGetFavorites(HttpSession session, HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException {
+		Accounts user = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
+		List<Order> orders = orderService.findAll();
+		List<Product> products = new ArrayList<>();
 
-    private void doGetHistory(HttpSession session, HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        Accounts user = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
-        List<Order> orders = orderService.findAll();
-        List<Product> products = new ArrayList<>();
-        
-        orders.forEach(order -> {
-            if (order.getProducts() != null) {
-                products.addAll(order.getProducts());
-            }
-        });
+		orders.forEach(order -> {
+			if (order.getProducts() != null) {
+				products.addAll(order.getProducts());
+			}
+		});
 
-        req.setAttribute("products", products);
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/history.jsp");
-        requestDispatcher.forward(req, res);
-    }
-    
-    private void doGetProducts(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		req.setAttribute("products", products);
+		RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/favorites.jsp");
+		requestDispatcher.forward(req, res);
+	}
 
-    	List<Product> products = productService.findAll();    
-    	req.setAttribute("products", products);
-    	
-    	RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/products.jsp");
-        requestDispatcher.forward(req, res);
-    }
-    
-    private void doGetCart(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		/*
-		 * HttpSession session = req.getSession(); List<OrderDetails> cart =
-		 * (List<OrderDetails>) session.getAttribute("cart"); if (cart == null) { cart =
-		 * new ArrayList<>(); session.setAttribute("cart", cart); }
-		 * 
-		 * String productId = req.getParameter("id"); Product product =
-		 * getProductById(Integer.parseInt(productId)); // Method to get product details
-		 * by id if (product != null) { OrderDetails orderDetails = new OrderDetails();
-		 * orderDetails.setProduct(product);
-		 * orderDetails.setPrice(product.getPrice().floatValue()); // Assuming price is
-		 * stored as Float orderDetails.setQuantity(1); // Default quantity
-		 * 
-		 * cart.add(orderDetails); }
-		 * 
-		 * res.sendRedirect("cart.jsp");
-		 */
-        
-    	RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/cart.jsp");
-        requestDispatcher.forward(req, res);
-    }
+	private void doGetHistory(HttpSession session, HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException {
+		Accounts user = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
+		List<Order> orders = orderService.findAll();
+		List<Product> products = new ArrayList<>();
 
-    private Product getProductById(Integer productId) {
-        SessionFactory factory = HibernateUtil.getSessionFactory();
-        Session session = null;
-        Product product = null;
-        try {
-            session = factory.openSession();
-            product = session.get(Product.class, productId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-        return product;
-    }
-    
+		orders.forEach(order -> {
+			if (order.getProducts() != null) {
+				products.addAll(order.getProducts());
+			}
+		});
+
+		req.setAttribute("products", products);
+		RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/history.jsp");
+		requestDispatcher.forward(req, res);
+	}
+
+//    Show sản phẩm
+	private void doGetProducts(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+		List<Product> products = productService.findAll();
+		req.setAttribute("products", products);
+
+		RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/products.jsp");
+		requestDispatcher.forward(req, res);
+	}
+
+//    Show giỏ hàng
+	private void doViewCart(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		RequestDispatcher requestDispatcher = req.getRequestDispatcher("/views/user/cart.jsp");
+		requestDispatcher.forward(req, res);
+	}
+
+//    Add sản phẩm vào giỏ hàng
+//	private void doAddToCart(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int masp,
+//			int soluong) throws ServletException, IOException {
+//		CartDto cart = (CartDto) session.getAttribute("cart");
+//		boolean isUpdate = req.getParameter("isUpdate").equals("1");
+//		cartService.updateCart(cart, masp, soluong, isUpdate);
+//		ObjectMapper mapper = new ObjectMapper();
+//		String cartToJsonString = mapper.writeValueAsString(cart);
+//		resp.setContentType("application/json");
+//		PrintWriter out = resp.getWriter();
+//		out.print(cartToJsonString);
+//		out.flush();
+//	}
+	
+	private void doAddToCart(HttpServletRequest req, HttpServletResponse resp, HttpSession session) throws ServletException, IOException {
+	    int productId = Integer.parseInt(req.getParameter("productId"));
+	    int quantity = Integer.parseInt(req.getParameter("quantity"));
+	    CartDto cart = (CartDto) session.getAttribute("cart");
+	    
+	    // Nếu giỏ hàng chưa tồn tại, khởi tạo mới
+	    if (cart == null) {
+	        cart = new CartDto();
+	        session.setAttribute("cart", cart);
+	    }
+	    
+	    boolean isUpdate = req.getParameter("isUpdate") != null && req.getParameter("isUpdate").equals("1");
+	    cartService.updateCart(cart, productId, quantity, isUpdate);
+	    ObjectMapper mapper = new ObjectMapper();
+	    String cartToJsonString = mapper.writeValueAsString(cart);
+	    resp.setContentType("application/json");
+	    PrintWriter out = resp.getWriter();
+	    out.print(cartToJsonString);
+	    out.flush();
+	}
+
 }
-    
