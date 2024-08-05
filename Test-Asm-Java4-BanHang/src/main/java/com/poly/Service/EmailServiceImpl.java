@@ -14,8 +14,10 @@ public class EmailServiceImpl implements EmailService {
 	public void sendMail(ServletContext context, Accounts recipient, String type) {
 		String host = context.getInitParameter("host");
 		String port = context.getInitParameter("port");
-		String accounts = context.getInitParameter("accounts");
-		String pass = context.getInitParameter("pass");
+//		String accounts = context.getInitParameter("accounts");
+//		String pass = context.getInitParameter("pass");
+		String accounts = "khangdqbps36645@fpt.edu.vn";
+		String pass = "qzbg psjd utvc bffr";
 		try {
 			String content = null;
 			String subject = null;

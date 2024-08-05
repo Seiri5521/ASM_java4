@@ -292,7 +292,7 @@
                     <c:when test="${not empty sessionScope.currentAccounts}">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img src="${sessionScope.currentAccounts.photo}" alt="User Avatar" class="avatar">
+                                <img src="<c:url value='/Template/Admin/dist/img/Ly.jpg'/>" alt="User Avatar" class="avatar">
                                 ${sessionScope.currentAccounts.fullname}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="userDropdown">
@@ -347,7 +347,33 @@
 </div>
 
 <!-- Modal đổi mật khẩu -->
-<div class="modal fade" id="changePassModal" tabindex="-1" role="dialog" aria-labelledby="changePassModalLabel" aria-hidden="true">
+<div class="modal fade" id="changePassModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLabel">Đổi Mật Khẩu</h5>
+                <button type="button" class="close btn btn-danger rounded-pill" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="password" name="currentPass" id="currentPass" class="form-control rounded-pill" placeholder="Mật Khẩu Hiện Tại" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="newPass" id="newPass" class="form-control rounded-pill" placeholder="Mật Khẩu Mới" required>
+                </div>
+                <h5 class="text-center text-danger" id="messageChangePass"></h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary rounded-pill" id="changePassBtn">Lưu Thay Đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="modal fade" id="changePassModal" tabindex="-1" role="dialog" aria-labelledby="changePassModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -375,7 +401,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
@@ -386,6 +412,42 @@
         $('#search-btn').on('click', function() {
             var searchTerm = $('#search-input').val();
             window.location.href = 'search?query=' + searchTerm;
+        });
+    });
+    
+    
+    //Đổi mật khẩu
+    $(document).ready(function() {
+        $('#changePassBtn').click(function() {
+            $('#messageChangePass').text('');
+            var currentPass = $('#currentPass').val();
+            var newPass = $('#newPass').val();
+            var postData = {
+                currentPass: currentPass,
+                newPass: newPass
+            };
+
+            $.ajax({
+                url: '<%= request.getContextPath() %>/changePassword',
+                type: 'POST',
+                data: postData,
+                success: function() {
+                    $('#messageChangePass').text('Mật khẩu đã được thay đổi thành công!');
+                    setTimeout(function() {
+                        $('#changePassModal').modal('hide');
+                        $('#messageChangePass').text('');
+                    }, 2000);
+                },
+                error: function(xhr) {
+                    if (xhr.status === 400) {
+                        $('#messageChangePass').text('Mật khẩu hiện tại không đúng!');
+                    } else if (xhr.status === 401) {
+                        $('#messageChangePass').text('Bạn chưa đăng nhập!');
+                    } else {
+$('#messageChangePass').text('Lỗi hệ thống! Vui lòng thử lại sau.');
+                    }
+                }
+            });
         });
     });
 </script>

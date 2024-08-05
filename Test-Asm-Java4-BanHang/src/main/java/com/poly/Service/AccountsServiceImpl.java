@@ -95,4 +95,16 @@ public class AccountsServiceImpl implements AccountsService {
         // Thay đổi phương thức gọi stored procedure cho phù hợp
         return  ((AbstractDao<Accounts>) dao).callStoredProcedure("sp_selectUsersBoughtProductById", params);
     }
+    
+    @Override
+	public void updatePassword(Accounts account, String newPassword) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String generateNewPassword() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -122,38 +122,102 @@ public class AccountsServlet extends HttpServlet {
 		}
 	}
 
-	private void doPostForgotPass(HttpServletRequest req, HttpServletResponse res) {
-			res.setContentType("application/json");
-			String email = req.getParameter("email");
-			Accounts accountsWithNewPass = accountsService.resetPassword(email);
-			
-			if(accountsWithNewPass != null) {
-				emailService.sendMail(getServletContext(), accountsWithNewPass, "forgot");
-				res.setStatus(204); // Gui Mail thanh cong!!
-			}else {
-				res.setStatus(400);
-			}
-	}
+//	private void doPostForgotPass(HttpServletRequest req, HttpServletResponse res) {
+//			res.setContentType("application/json");
+//			String email = req.getParameter("email");
+//			Accounts accountsWithNewPass = accountsService.resetPassword(email);
+//			
+//			if(accountsWithNewPass != null) {
+//				emailService.sendMail(getServletContext(), accountsWithNewPass, "forgot");
+//				res.setStatus(204); // Gui Mail thanh cong!!
+//			}else {
+//				res.setStatus(400);
+//			}
+//	}
+	
+//	private void doPostChangePass(HttpSession session, HttpServletRequest  req, HttpServletResponse res) {
+//			res.setContentType("application/json"); //
+//			String currentPass = req.getParameter("currentPass");
+//			String newPass = req.getParameter("newPass");
+//			
+//			Accounts currentAccounts = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
+//			
+//			if(currentAccounts.getPassword().equals(currentPass)) { // so sanh chuoi Pass cu va Pass cu da nhap
+//				currentAccounts.setPassword(newPass);
+//				Accounts updateUser = accountsService.update(currentAccounts);
+//				if(updateUser != null) {
+//					session.setAttribute(SessionAtt.CURRENT_ACCOUNTS, updateUser); //Push pass cua user mo vao session tranh xung dot
+//					res.setStatus(204);
+//				}else {
+//					res.setStatus(400);
+//					//Xu li ajax o Footer.jsp
+//				}
+//			}else {
+//				res.setStatus(400);
+//			}		
+//		}
+	
 	private void doPostChangePass(HttpSession session, HttpServletRequest  req, HttpServletResponse res) {
-			res.setContentType("application/json"); //
-			String currentPass = req.getParameter("currentPass");
-			String newPass = req.getParameter("newPass");
-			
-			Accounts currentAccounts = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
-			
-			if(currentAccounts.getPassword().equals(currentPass)) { // so sanh chuoi Pass cu va Pass cu da nhap
-				currentAccounts.setPassword(newPass);
-				Accounts updateUser = accountsService.update(currentAccounts);
-				if(updateUser != null) {
-					session.setAttribute(SessionAtt.CURRENT_ACCOUNTS, updateUser); //Push pass cua user mo vao session tranh xung dot
-					res.setStatus(204);
-				}else {
-					res.setStatus(400);
-					//Xu li ajax o Footer.jsp
-				}
-			}else {
-				res.setStatus(400);
-			}		
-		}
+		res.setContentType("application/json"); //
+		String currentPass = req.getParameter("currentPass");
+		String newPass = req.getParameter("newPass");
 		
+		Accounts currentAccounts = (Accounts) session.getAttribute(SessionAtt.CURRENT_ACCOUNTS);
+		
+		if (currentAccounts == null) {
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+       
+        if (currentPass == null || newPass == null) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        if (currentAccounts.getPassword().equals(currentPass)) {
+            currentAccounts.setPassword(newPass);
+            Accounts updateUser = accountsService.update(currentAccounts);
+
+            if (updateUser != null) {
+                session.setAttribute(SessionAtt.CURRENT_ACCOUNTS, updateUser);
+                res.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+	private void doPostForgotPass(HttpServletRequest req, HttpServletResponse res) {
+		res.setContentType("application/json");
+	    String email = req.getParameter("email");
+	    
+	    try {
+	        // Kiểm tra xem có tài khoản với email đã nhập không
+	        Accounts account = accountsService.findByEmail(email);
+	        
+	        if (account != null) {
+	            // Tạo mật khẩu mới
+	            String newPassword = accountsService.generateNewPassword();
+	            
+	            // Cập nhật tài khoản với mật khẩu mới (nên mã hóa mật khẩu)
+	            accountsService.updatePassword(account, newPassword);
+	            
+	            // Gửi mật khẩu mới đến email của người dùng
+	            String subject = "Mật khẩu mới";
+	            String message = "Mật khẩu mới của bạn là: " + newPassword;
+	            emailService.sendMail(getServletContext(), account, "forgot");
+	            
+	            res.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 No Content, thành công nhưng không có nội dung trả về
+	            
+	        } else {
+	            res.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 Bad Request, không tìm thấy email
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	       res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Internal Server Error, có lỗi xảy ra
+	    }
+	  
+	}
 }

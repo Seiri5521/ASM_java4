@@ -17,4 +17,7 @@ public interface AccountsService {
     Accounts delete(String username);
     // Thêm phương thức mới
     List<Accounts> findUsersBoughtByProductId(int productId); // Tìm người dùng đã mua sản phẩm theo productId
+    
+    void updatePassword(Accounts account, String newPassword);
+	String generateNewPassword();
 }
