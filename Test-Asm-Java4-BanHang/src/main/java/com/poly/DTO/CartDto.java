@@ -1,7 +1,10 @@
 package com.poly.DTO;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 
 public class CartDto implements Serializable {
 
@@ -11,9 +14,8 @@ public class CartDto implements Serializable {
 	private String userId;
 	private double tongtien = 0;
 	private int tongsl = 0;
-	private String dienthoai;
-	private String diachi;
 	private HashMap<Integer, CartDetailDto> detail = new HashMap<>();
+	private List<CartItems> items = new ArrayList<>();
 
 	public int getId() {
 		return id;
@@ -47,21 +49,6 @@ public class CartDto implements Serializable {
 		this.tongsl = tongsl;
 	}
 	
-	public String getDienthoai() {
-		return dienthoai;
-	}
-
-	public void setDienthoai(String dienthoai) {
-		this.dienthoai = dienthoai;
-	}
-
-	public String getDiachi() {
-		return diachi;
-	}
-
-	public void setDiachi(String diachi) {
-		this.diachi = diachi;
-	}
 
 	public HashMap<Integer, CartDetailDto> getDetail() {
 		return detail;
@@ -70,4 +57,14 @@ public class CartDto implements Serializable {
 	public void setDetail(HashMap<Integer, CartDetailDto> detail) {
 		this.detail = detail;
 	}
+	
+	public List<CartItems> getItems() {
+		return items;
+	}
+
+	public void setItems(List<CartItems> items) {
+		this.items = items;
+	}
+
 }
+

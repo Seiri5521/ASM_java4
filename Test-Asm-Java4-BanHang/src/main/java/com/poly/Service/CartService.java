@@ -91,9 +91,9 @@ public class CartService {
 	
 	private Order mappingDtoToOrderEntity(CartDto cartDto) {
 		Order hoadon = new Order();
-		hoadon.setAddress(cartDto.getDiachi());
-		//hoadon.setDienthoai(cartDto.getDienthoai());
-		//hoadon.setTongtien(cartDto.getTongtien());
+//		hoadon.setAddress(cartDto.getDiachi());
+//		hoadon.setDienthoai(cartDto.getDienthoai());
+//		hoadon.setTongtien(cartDto.getTongtien());
 		Accounts accounts = accountsDao.findByID(cartDto.getUserId());
 		hoadon.setUser(accounts);
 		return hoadon;

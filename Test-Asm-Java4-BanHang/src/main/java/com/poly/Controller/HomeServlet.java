@@ -57,16 +57,16 @@ public class HomeServlet extends HttpServlet {
 			break;
 		}
 	}
-	
-	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-	    String path = req.getServletPath();
-	    HttpSession session = req.getSession();
-	    if ("/addCart".equals(path)) {
-	        doAddToCart(req, res, session);
-	        session.removeAttribute("cart");
-	    }
-	}
 
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		String path = req.getServletPath();
+		HttpSession session = req.getSession();
+		if ("/addCart".equals(path)) {
+			doAddToCart(req, res, session);
+			
+//			session.removeAttribute("cart");
+		}
+	}
 
 	private void doGetIndex(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		List<Product> countProduct = productService.findAll();
@@ -151,26 +151,31 @@ public class HomeServlet extends HttpServlet {
 //		out.print(cartToJsonString);
 //		out.flush();
 //	}
-	
-	private void doAddToCart(HttpServletRequest req, HttpServletResponse resp, HttpSession session) throws ServletException, IOException {
-	    int productId = Integer.parseInt(req.getParameter("productId"));
-	    int quantity = Integer.parseInt(req.getParameter("quantity"));
-	    CartDto cart = (CartDto) session.getAttribute("cart");
+
+	private void doAddToCart(HttpServletRequest req, HttpServletResponse resp, HttpSession session)
+			throws ServletException, IOException {
+		int productId = Integer.parseInt(req.getParameter("productId"));
+		int quantity = Integer.parseInt(req.getParameter("quantity"));
+		CartDto cart = (CartDto) session.getAttribute("cart");
+
+		// Nếu giỏ hàng chưa tồn tại, khởi tạo mới
+		if (cart == null) {
+			cart = new CartDto();
+			session.setAttribute("cart", cart);
+		}
+
+		boolean isUpdate = req.getParameter("isUpdate") != null && req.getParameter("isUpdate").equals("1");
+		cartService.updateCart(cart, productId, quantity, isUpdate);
+
+//	    ObjectMapper mapper = new ObjectMapper();
+//	    String cartToJsonString = mapper.writeValueAsString(cart);
+//	    resp.setContentType("application/json");
+//	    PrintWriter out = resp.getWriter();
+//	    out.print(cartToJsonString);
+//	    out.flush();
 	    
-	    // Nếu giỏ hàng chưa tồn tại, khởi tạo mới
-	    if (cart == null) {
-	        cart = new CartDto();
-	        session.setAttribute("cart", cart);
-	    }
-	    
-	    boolean isUpdate = req.getParameter("isUpdate") != null && req.getParameter("isUpdate").equals("1");
-	    cartService.updateCart(cart, productId, quantity, isUpdate);
-	    ObjectMapper mapper = new ObjectMapper();
-	    String cartToJsonString = mapper.writeValueAsString(cart);
-	    resp.setContentType("application/json");
-	    PrintWriter out = resp.getWriter();
-	    out.print(cartToJsonString);
-	    out.flush();
+		RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/cart.jsp");
+		dispatcher.forward(req, resp);
 	}
 
 }
